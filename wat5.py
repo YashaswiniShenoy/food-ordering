@@ -285,7 +285,7 @@ def message(bot, update):
             rows=c.execute(query)
             for row in rows:
                 r=None
-                r='Restaurant:{}\nItemname:{}\nQuantity:{}\nPrice:{}\nAmount{}'.format(row[0],row[1],row[2],row[3],row[4])
+                r='Restaurant:{}\nItemname:{}\nQuantity:{}\nPrice:{}\nAmount{}:'.format(row[0],row[1],row[2],row[3],row[4])
                 print(r)
                 update.message.reply_text(r)
                 s+=row[4]
