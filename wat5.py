@@ -65,7 +65,7 @@ def message(bot, update):
         conn.close()
         context = None
 
-    if ('itemname' in response['context']) and ('root' in response['context']['system']['dialog_stack'][0]['dialog_node'] and 'resturant' in response['context']==False):
+    if (('item' in response['intents'][0]['intent']) and ('root' in response['context']['system']['dialog_stack'][0]['dialog_node'])):
         fooditem = str(response['context']['itemname'])
         print(fooditem)
         conn = sqlite3.connect('pro1.db')
@@ -266,37 +266,38 @@ def message(bot, update):
         fooditem = str(response['context']['itemname'])
         quantity= (response['context']['quantity'])
         query1="select price from food1 where rest='"+resturant+ "'and item='"+fooditem+"'"
+        print('price retrieved')
         rows=c.execute(query1)
         for row in rows:
             row1=row[0]
         row2=row1*quantity
         d=list()
-        d = [resturant, fooditem, quantity,row1,row2]
+        d = [resturant,fooditem,quantity,row1,row2]
         print(d)
-        c.execute("INSERT INTO orders (rest,item,quantity,price,amount) values (?1,?2,?3,?4,?5)", (d[0],d[1],d[2],d[3],d[4]))
+        c.execute("INSERT INTO orders (rest,item,quantity,price,amount) values (?1,?2,?3,?4,?5)", (d[0], d[1], d[2], d[3], d[4]))
         conn.commit()
         conn.close()
-        if('terminate' in response['intents'][0]['intent']):
-            conn=sqlite3.connect('pro1.db')
-            c=conn.cursor()
-            s=0
-            print('no')
-            query="select * from orders"
-            rows=c.execute(query)
-            for row in rows:
-                r=None
-                r='Restaurant:{}\nItemname:{}\nQuantity:{}\nPrice:{}\nAmount{}:'.format(row[0],row[1],row[2],row[3],row[4])
-                print(r)
-                update.message.reply_text(r)
-                s+=row[4]
-            t='TOTAL AMOUNT=%d'%s
-            update.message.reply_text(t)
-            c.execute("delete from orders")
-            conn.commit()
-            conn.close()
-            context=None
-        else:
-            context=None
+        context=None
+    if('terminate' in response['intents'][0]['intent']):
+        conn=sqlite3.connect('pro1.db')
+        c=conn.cursor()
+        s=0
+        print('no')
+        query="select * from orders"
+        rows=c.execute(query)
+        for row in rows:
+            r=None
+            r='Restaurant:{}\nItemname:{}\nQuantity:{}\nPrice:{}\nAmount:{}'.format(row[0],row[1],row[2],row[3],row[4])
+            print(r)
+            update.message.reply_text(r)
+            s+=row[4]
+        t='TOTAL AMOUNT=%d'%s
+        update.message.reply_text(t)
+        c.execute("delete from orders")
+        conn.commit()
+        conn.close()
+        context=None
+
 def main():
     # Create the Updater and pass it your bot's token.
     updater = Updater('691666941:AAEDTjvGB0H3GDXNpa25WDLTZ_jeaVj0jlk')  # TODO
